@@ -1,6 +1,8 @@
 pragma solidity ^0.5.13;
 
-contract allowance {
+contract Allowance {
+    
+    event WithDrawEvent(address indexed _from, uint indexed oldAmount, uint newAmount);
 
     address payable owner;
     uint public balance;
@@ -19,9 +21,6 @@ contract allowance {
     }
 
     function withdraw(uint amount) public {
-        //check address
-        //if address is deployer withdraw unlimited
-        //else withdraw is amount <= allowance
         address payable to;
 
         if ( msg.sender == owner ) {
@@ -32,6 +31,8 @@ contract allowance {
             require( amount <= balance, "contract doesn't have enough funds");
             to = msg.sender;
         }
+
+        emit WithDrawEvent(msg.sender, allowances[to], allowances[to]+amount);
 
         to.transfer(amount);                
         allowances[to] += amount;
